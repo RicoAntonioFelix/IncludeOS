@@ -17,7 +17,6 @@
 
 #include <algorithm>
 #include <cctype>
-#include <ostream>
 #include <uri>
 #include <utility>
 #include <vector>
@@ -27,7 +26,7 @@
 namespace uri {
 
 ///////////////////////////////////////////////////////////////////////////////
-static inline bool icase_equal(util::csview lhs, util::csview rhs) noexcept {
+static inline bool icase_equal(const std::string_view lhs, const std::string_view rhs) noexcept {
   return (lhs.size() == rhs.size())
          and
          std::equal(lhs.cbegin(), lhs.cend(), rhs.cbegin(), [](const char a, const char b) {
@@ -36,8 +35,8 @@ static inline bool icase_equal(util::csview lhs, util::csview rhs) noexcept {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-static inline uint16_t bind_port(util::csview scheme, const uint16_t port_from_uri) noexcept {
-  static const std::vector<std::pair<util::csview, uint16_t>> port_table
+static inline uint16_t bind_port(const std::string_view scheme, const uint16_t port_from_uri) noexcept {
+  static const std::vector<std::pair<const std::string_view, uint16_t>> port_table
   {
     {"ftp",    21U},
     {"http",   80U},
@@ -67,9 +66,9 @@ static inline uint16_t bind_port(util::csview scheme, const uint16_t port_from_u
 ///////////////////////////////////////////////////////////////////////////////
 // copy helper
 ///////////////////////////////////////////////////////////////////////////////
-static inline util::sview updated_copy(const std::string& to_copy,
-                                       util::csview view,
-                                       const std::string& from_copy)
+static inline std::string_view updated_copy(const std::string& to_copy,
+                                            const std::string_view view,
+                                            const std::string& from_copy)
 {
   return {to_copy.data() + (view.data() - from_copy.data()), view.size()};
 }
@@ -83,20 +82,20 @@ URI::URI(const char* uri, const bool parse)
 
 ///////////////////////////////////////////////////////////////////////////////
 URI::URI(const char* uri, const size_t count, const bool parse)
-  : uri_str_{decode(util::csview{uri, count})}
+  : uri_str_{decode(std::string_view{uri, count})}
 {
   if (parse) this->parse();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 URI::URI(const std::string& uri, const bool parse)
-  : uri_str_{decode(util::csview{uri.data(), uri.length()})}
+  : uri_str_{decode(std::string_view{uri.data(), uri.length()})}
 {
   if (parse) this->parse();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-URI::URI(util::csview uri, const bool parse)
+URI::URI(const std::string_view uri, const bool parse)
   : uri_str_{decode(uri)}
 {
   if (parse) this->parse();
@@ -175,17 +174,17 @@ URI& URI::operator=(URI&& u) noexcept {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-util::sview URI::scheme() const noexcept {
+std::string_view URI::scheme() const noexcept {
   return scheme_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-util::sview URI::userinfo() const noexcept {
+std::string_view URI::userinfo() const noexcept {
   return userinfo_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-util::sview URI::host() const noexcept {
+std::string_view URI::host() const noexcept {
   return host_;
 }
 
@@ -205,7 +204,7 @@ std::string URI::host_and_port() const {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-util::sview URI::port_str() const noexcept {
+std::string_view URI::port_str() const noexcept {
   return port_str_;
 }
 
@@ -215,29 +214,29 @@ uint16_t URI::port() const noexcept {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-util::sview URI::path() const noexcept {
+std::string_view URI::path() const noexcept {
   return path_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-util::sview URI::query() const noexcept {
+std::string_view URI::query() const noexcept {
   return query_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-util::sview URI::fragment() const noexcept {
+std::string_view URI::fragment() const noexcept {
   return fragment_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-util::sview URI::query(util::csview key) {
+std::string_view URI::query(const std::string_view key) {
   if (query_map_.empty() and (not query_.empty())) {
     load_queries();
   }
 
   const auto target = query_map_.find(key);
 
-  return (target not_eq query_map_.cend()) ? target->second : util::sview{};
+  return (target not_eq query_map_.cend()) ? target->second : std::string_view{};
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -282,13 +281,13 @@ URI& URI::parse() {
 
   (void)result;
 
-  scheme_   = (u.field_set & (1 << UF_SCHEMA))   ? util::sview{p + u.field_data[UF_SCHEMA].off,   u.field_data[UF_SCHEMA].len}   : util::sview{};
-  userinfo_ = (u.field_set & (1 << UF_USERINFO)) ? util::sview{p + u.field_data[UF_USERINFO].off, u.field_data[UF_USERINFO].len} : util::sview{};
-  host_     = (u.field_set & (1 << UF_HOST))     ? util::sview{p + u.field_data[UF_HOST].off,     u.field_data[UF_HOST].len}     : util::sview{};
-  port_str_ = (u.field_set & (1 << UF_PORT))     ? util::sview{p + u.field_data[UF_PORT].off,     u.field_data[UF_PORT].len}     : util::sview{};
-  path_     = (u.field_set & (1 << UF_PATH))     ? util::sview{p + u.field_data[UF_PATH].off,     u.field_data[UF_PATH].len}     : util::sview{};
-  query_    = (u.field_set & (1 << UF_QUERY))    ? util::sview{p + u.field_data[UF_QUERY].off,    u.field_data[UF_QUERY].len}    : util::sview{};
-  fragment_ = (u.field_set & (1 << UF_FRAGMENT)) ? util::sview{p + u.field_data[UF_FRAGMENT].off, u.field_data[UF_FRAGMENT].len} : util::sview{};
+  scheme_   = (u.field_set & (1 << UF_SCHEMA))   ? std::string_view{p + u.field_data[UF_SCHEMA].off,   u.field_data[UF_SCHEMA].len}   : std::string_view{};
+  userinfo_ = (u.field_set & (1 << UF_USERINFO)) ? std::string_view{p + u.field_data[UF_USERINFO].off, u.field_data[UF_USERINFO].len} : std::string_view{};
+  host_     = (u.field_set & (1 << UF_HOST))     ? std::string_view{p + u.field_data[UF_HOST].off,     u.field_data[UF_HOST].len}     : std::string_view{};
+  port_str_ = (u.field_set & (1 << UF_PORT))     ? std::string_view{p + u.field_data[UF_PORT].off,     u.field_data[UF_PORT].len}     : std::string_view{};
+  path_     = (u.field_set & (1 << UF_PATH))     ? std::string_view{p + u.field_data[UF_PATH].off,     u.field_data[UF_PATH].len}     : std::string_view{};
+  query_    = (u.field_set & (1 << UF_QUERY))    ? std::string_view{p + u.field_data[UF_QUERY].off,    u.field_data[UF_QUERY].len}    : std::string_view{};
+  fragment_ = (u.field_set & (1 << UF_FRAGMENT)) ? std::string_view{p + u.field_data[UF_FRAGMENT].off, u.field_data[UF_FRAGMENT].len} : std::string_view{};
 
   port_ = bind_port(scheme_, u.port);
 
@@ -305,13 +304,13 @@ URI& URI::reset() {
 void URI::load_queries() {
   auto _ = query_;
 
-  util::sview name  {};
-  util::sview value {};
-  util::sview::size_type base {0U};
-  util::sview::size_type break_point {};
+  std::string_view name  {};
+  std::string_view value {};
+  std::string_view::size_type base {0U};
+  std::string_view::size_type break_point {};
 
   while (true) {
-    if ((break_point = _.find('=')) not_eq util::sview::npos) {
+    if ((break_point = _.find('=')) not_eq std::string_view::npos) {
       name = _.substr(base, break_point);
       //-----------------------------------
       _.remove_prefix(name.length() + 1U);
@@ -320,7 +319,7 @@ void URI::load_queries() {
       break;
     }
 
-    if ((break_point = _.find('&')) not_eq util::sview::npos) {
+    if ((break_point = _.find('&')) not_eq std::string_view::npos) {
       value = _.substr(base, break_point);
       query_map_.emplace(name, value);
       _.remove_prefix(value.length() + 1U);
@@ -345,11 +344,6 @@ bool operator == (const URI& lhs, const URI& rhs) noexcept {
          and lhs.path() == rhs.path()
          and lhs.query() == rhs.query()
          and lhs.fragment() == rhs.fragment();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-std::ostream& operator<< (std::ostream& output_device, const URI& uri) {
-  return output_device << uri.to_string();
 }
 
 } //< namespace uri

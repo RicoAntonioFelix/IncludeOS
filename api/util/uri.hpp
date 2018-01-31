@@ -1,6 +1,6 @@
 // This file is a part of the IncludeOS unikernel - www.includeos.org
 //
-// Copyright 2015-2017 Oslo and Akershus University College of Applied Sciences
+// Copyright 2015-2018 Oslo and Akershus University College of Applied Sciences
 // and Alfred Bratterud
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +19,10 @@
 #ifndef UTIL_URI_HPP
 #define UTIL_URI_HPP
 
+#include <iosfwd>
 #include <string>
+#include <string_view>
 #include <unordered_map>
-
-#include "detail/string_view"
 
 namespace uri {
 
@@ -33,7 +33,7 @@ namespace uri {
 /// This type is used to represent an error that occurred
 /// from within the operations of class URI
 ///
-struct URI_error : public std::runtime_error {
+struct URI_error : std::runtime_error {
   using runtime_error::runtime_error;
 }; //< struct URI_error
 
@@ -120,7 +120,7 @@ class URI {
   /// @param parse
   ///   Whether to perform parsing on the the data specified in {uri}
   ///
-  URI(util::csview uri, const bool parse = true);
+  URI(const std::string_view uri, const bool parse = true);
 
   ///////////////////////////////////////////////
   //----------RFC-specified URI parts----------//
@@ -133,7 +133,7 @@ class URI {
   ///
   /// @return The scheme
   ///
-  util::sview scheme() const noexcept;
+  std::string_view scheme() const noexcept;
 
   ///
   /// Get userinfo.
@@ -142,7 +142,7 @@ class URI {
   ///
   /// @return The user's information
   ///
-  util::sview userinfo() const noexcept;
+  std::string_view userinfo() const noexcept;
 
   ///
   /// Get host.
@@ -151,7 +151,7 @@ class URI {
   ///
   /// @return The host's information
   ///
-  util::sview host() const noexcept;
+  std::string_view host() const noexcept;
 
   ///
   /// Check if host portion is an IPv4 address.
@@ -181,7 +181,7 @@ class URI {
   ///
   /// @return The raw port number in decimal character representation
   ///
-  util::sview port_str() const noexcept;
+  std::string_view port_str() const noexcept;
 
   ///
   /// Get numeric port number.
@@ -200,14 +200,14 @@ class URI {
   ///
   /// @return The path information
   ///
-  util::sview path() const noexcept;
+  std::string_view path() const noexcept;
 
   ///
   /// Get the complete unparsed query string.
   ///
   /// @return The complete unparsed query string
   ///
-  util::sview query() const noexcept;
+  std::string_view query() const noexcept;
 
   ///
   /// Get the fragment part.
@@ -216,7 +216,7 @@ class URI {
   ///
   /// @return the fragment part
   ///
-  util::sview fragment() const noexcept;
+  std::string_view fragment() const noexcept;
 
   ///
   /// Get the URI-decoded value of a query-string key.
@@ -229,7 +229,7 @@ class URI {
   /// @example For the query: "?name=Bjarne%20Stroustrup",
   /// query("name") returns "Bjarne Stroustrup"
   ///
-  util::sview query(util::csview key);
+  std::string_view query(const std::string_view key);
 
   ///
   /// Check to see if an object of this type is valid
@@ -289,15 +289,15 @@ private:
 
   uint16_t port_ {0xFFFF};
 
-  util::sview scheme_;
-  util::sview userinfo_;
-  util::sview host_;
-  util::sview port_str_;
-  util::sview path_;
-  util::sview query_;
-  util::sview fragment_;
+  std::string_view scheme_;
+  std::string_view userinfo_;
+  std::string_view host_;
+  std::string_view port_str_;
+  std::string_view path_;
+  std::string_view query_;
+  std::string_view fragment_;
 
-  std::unordered_map<util::sview, util::sview> query_map_;
+  std::unordered_map<std::string_view, std::string_view> query_map_;
 
   ///
   /// Load queries into the map
@@ -345,7 +345,10 @@ bool operator == (const URI& lhs, const URI& rhs) noexcept;
 ///
 /// @return A reference to the specified output stream device
 ///
-std::ostream& operator<< (std::ostream& output_device, const URI& uri);
+template<typename Char, typename Char_traits>
+inline std::basic_ostream<Char, Char_traits>& operator<<(std::basic_ostream<Char, Char_traits>& output_device, const URI& uri) {
+  return output_device << uri.to_string();
+}
 
 } //< namespace uri
 

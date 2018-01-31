@@ -1,6 +1,6 @@
 // This file is a part of the IncludeOS unikernel - www.includeos.org
 //
-// Copyright 2015-2016 Oslo and Akershus University College of Applied Sciences
+// Copyright 2015-2018 Oslo and Akershus University College of Applied Sciences
 // and Alfred Bratterud
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@
 #ifndef HTTP_MESSAGE_HPP
 #define HTTP_MESSAGE_HPP
 
-#include <sstream>
+#include <iosfwd>
 
 #include "header.hpp"
 #include "time.hpp"
@@ -136,7 +136,7 @@ public:
   ///
   /// @return A view of the entity in this message
   ///
-  util::sview body() const noexcept;
+  std::string_view body() const noexcept;
 
   ///
   /// Remove the entity from the message
@@ -172,7 +172,7 @@ public:
   ///
   /// @return A view of a buffer holding intermediate information
   ///
-  util::sview private_field() const noexcept;
+  std::string_view private_field() const noexcept;
 
   ///
   /// Set the content of the buffer holding intermediate information
@@ -198,7 +198,7 @@ private:
   ///
   Header       header_fields_;
   Message_body message_body_;
-  util::sview  field_;
+  std::string_view  field_;
   bool         headers_complete_;
 }; //< class Message
 
@@ -226,6 +226,11 @@ inline void Message::set_headers_complete(const bool complete) noexcept {
 
 inline bool Message::headers_complete() const noexcept {
   return headers_complete_;
+}
+
+template<typename Char, typename Char_traits>
+inline std::basic_ostream<Char, Char_traits>& operator<<(std::basic_ostream<Char, Char_traits>& output_device, const Message& message) {
+  return output_device << message.to_string();
 }
 
 /**--^-------- Inline Implementations --------^--**/

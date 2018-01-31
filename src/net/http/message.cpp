@@ -15,6 +15,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <sstream>
 #include <net/http/message.hpp>
 
 namespace http {
@@ -54,7 +55,7 @@ bool Message::has_body() const noexcept {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-util::sview Message::body() const noexcept {
+std::string_view Message::body() const noexcept {
   return message_body_;
 }
 
@@ -86,7 +87,7 @@ Message::operator std::string () const {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-util::sview Message::private_field() const noexcept {
+std::string_view Message::private_field() const noexcept {
   return field_;
 }
 
@@ -101,11 +102,6 @@ Message& operator << (Message& message, const Header_set& headers) {
     message.header().add_field(field.first, field.second);
   }
   return message;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-std::ostream& operator << (std::ostream& output_device, const Message& message) {
-  return output_device << message.to_string();
 }
 
 } //< namespace http

@@ -19,11 +19,9 @@
 
 #include <net/http/mime_types.hpp>
 
-#include "../../../api/util/detail/string_view"
-
 namespace http {
 
-const std::unordered_map<util::sview, util::csview> mime_type_table {
+const std::unordered_map<std::string_view, const std::string_view> mime_type_table {
   //< Text mimes
   {"html", "text/html"},
   {"htm" , "text/html"},
@@ -92,7 +90,7 @@ const std::unordered_map<util::sview, util::csview> mime_type_table {
   {"msm" , "application/octet-stream"}
 }; //< mime_type_table
 
-util::sview ext_to_mime_type(util::csview extension) noexcept {
+std::string_view ext_to_mime_type(const std::string_view extension) noexcept {
   const auto it = mime_type_table.find(extension);
   //------------------------------------------------
   return (it not_eq mime_type_table.cend())

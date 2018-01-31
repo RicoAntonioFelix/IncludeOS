@@ -16,6 +16,7 @@
 // limitations under the License.
 
 #include <http-parser/http_parser.h>
+#include <sstream>
 #include <net/http/request.hpp>
 
 namespace http {
@@ -42,7 +43,8 @@ static void _GFRGRGRgegerjiuo_()
 
   settings.on_header_value = [](http_parser* parser, const char* at, size_t length) {
     auto req = reinterpret_cast<Request*>(parser->data);
-    req->header().set_field(req->private_field().to_string(), {at, length});
+    auto _ = req->private_field();
+    req->header().set_field({_.data(), _.length()}, {at, length});
     return 0;
   };
 

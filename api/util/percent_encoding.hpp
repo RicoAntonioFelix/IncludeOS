@@ -1,6 +1,6 @@
 // This file is a part of the IncludeOS unikernel - www.includeos.org
 //
-// Copyright 2015-2016 Oslo and Akershus University College of Applied Sciences
+// Copyright 2015-2018 Oslo and Akershus University College of Applied Sciences
 // and Alfred Bratterud
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,33 +39,34 @@
 #ifndef PERCENT_ENCODING_HPP
 #define PERCENT_ENCODING_HPP
 
-#include "detail/string_view"
+#include <string>
+#include <string_view>
 
 namespace uri {
 
 ///
 /// Encode (percent-encode) a view of data representing a uri
 ///
-std::string encode(util::csview input);
+std::string encode(const std::string_view input);
 
 ///
 /// Decode (percent-decode) a view of data representing a uri
 ///
-std::string decode(util::csview input);
+std::string decode(const std::string_view input);
 
 
 #ifdef URI_THROW_ON_ERROR
 #include <stdexcept>
 
-struct Decode_error : public std::runtime_error {
+struct Decode_error : std::runtime_error {
   using runtime_error::runtime_error;
 };
 
-struct Encode_error : public std::runtime_error {
+struct Encode_error : std::runtime_error {
   using runtime_error::runtime_error;
 };
 
-struct Hex_error : public Decode_error {
+struct Hex_error : Decode_error {
   using Decode_error::Decode_error;
 };
 

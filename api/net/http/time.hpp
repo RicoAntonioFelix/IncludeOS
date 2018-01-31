@@ -1,6 +1,6 @@
 // This file is a part of the IncludeOS unikernel - www.includeos.org
 //
-// Copyright 2015-2016 Oslo and Akershus University College of Applied Sciences
+// Copyright 2015-2018 Oslo and Akershus University College of Applied Sciences
 // and Alfred Bratterud
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +19,8 @@
 #define HTTP_TIME_HPP
 
 #include <ctime>
-#include <iomanip>
-#include <sstream>
-
-#include "../../util/detail/string_view"
+#include <string>
+#include <string_view>
 
 namespace http {
 namespace time {
@@ -49,7 +47,7 @@ std::string from_time_t(const std::time_t time_);
 ///
 /// @note Returns a default initialized {time_t} object if an error occurred
 ///
-std::time_t to_time_t(util::csview time_);
+std::time_t to_time_t(const std::string_view time_);
 
 ///
 /// Get the current time in {Internet Standard Format}

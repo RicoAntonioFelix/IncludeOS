@@ -1,6 +1,6 @@
 // This file is a part of the IncludeOS unikernel - www.includeos.org
 //
-// Copyright 2015-2016 Oslo and Akershus University College of Applied Sciences
+// Copyright 2015-2018 Oslo and Akershus University College of Applied Sciences
 // and Alfred Bratterud
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,10 +27,10 @@
 namespace http {
 
 ///
-/// This class is used to represent an error that occurred
+/// This type is used to represent an error that occurred
 /// from within the operations of class Response
 ///
-struct Response_error : public std::runtime_error {
+struct Response_error : std::runtime_error {
   using runtime_error::runtime_error;
 }; //< class Response_error
 

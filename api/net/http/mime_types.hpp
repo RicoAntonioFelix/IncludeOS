@@ -1,6 +1,6 @@
 // This file is a part of the IncludeOS unikernel - www.includeos.org
 //
-// Copyright 2015-2016 Oslo and Akershus University College of Applied Sciences
+// Copyright 2015-2018 Oslo and Akershus University College of Applied Sciences
 // and Alfred Bratterud
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@
 #ifndef HTTP_MIME_TYPES_HPP
 #define HTTP_MIME_TYPES_HPP
 
-#include "../../util/detail/string_view"
+#include <string_view>
 
 namespace http {
 
@@ -29,7 +29,7 @@ namespace http {
 ///
 /// @return The associated mime type for the specified extension
 ///
-util::sview ext_to_mime_type(util::csview extension) noexcept;
+std::string_view ext_to_mime_type(const std::string_view extension) noexcept;
 
 } //< namespace http
 

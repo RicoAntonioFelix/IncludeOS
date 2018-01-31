@@ -1,6 +1,6 @@
 // This file is a part of the IncludeOS unikernel - www.includeos.org
 //
-// Copyright 2015-2016 Oslo and Akershus University College of Applied Sciences
+// Copyright 2015-2018 Oslo and Akershus University College of Applied Sciences
 // and Alfred Bratterud
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,11 +27,10 @@
 namespace http {
 
 ///
-/// This class is used to represent an error that occurred
+/// This type is used to represent an error that occurred
 /// from within the operations of class Request
 ///
-class Request_error : public std::runtime_error {
-public:
+struct Request_error : std::runtime_error {
   using runtime_error::runtime_error;
 }; //< class Request_error
 
@@ -155,7 +154,7 @@ public:
   /// an empty string otherwise
   ///
   template<typename = void>
-  util::sview query_value(util::csview name) noexcept;
+  std::string_view query_value(const std::string_view name) noexcept;
 
   ///
   /// Get the value associated with the name
@@ -168,7 +167,7 @@ public:
   /// an empty string otherwise
   ///
   template<typename = void>
-  util::sview post_value(util::csview name) const noexcept;
+  std::string_view post_value(const std::string_view name) const noexcept;
 
   ///
   /// Reset the request message as if it was now
@@ -226,20 +225,20 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename>
-inline util::sview Request::query_value(util::csview name) noexcept {
-  return uri_.query(name.to_string());
+inline std::string_view Request::query_value(const std::string_view name) noexcept {
+  return uri_.query(name);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename>
-inline util::sview Request::post_value(util::csview name) const noexcept {
+inline std::string_view Request::post_value(const std::string_view name) const noexcept {
   if ((method() not_eq POST) or name.empty() or body().empty()) {
-    return {};
+    return std::string_view{};
   }
   //---------------------------------
   const auto target = body().find(name);
   //---------------------------------
-  if (target == util::sview::npos) return {};
+  if (target == std::string_view::npos) return std::string_view{};
   //---------------------------------
   auto focal_point = body().substr(target);
   //---------------------------------
@@ -247,7 +246,7 @@ inline util::sview Request::post_value(util::csview name) const noexcept {
   //---------------------------------
   const auto lock_and_load = focal_point.find('=');
   //---------------------------------
-  if (lock_and_load == util::sview::npos) return {};
+  if (lock_and_load == std::string_view::npos) return std::string_view{};
   //---------------------------------
   return focal_point.substr(lock_and_load + 1);
 }

@@ -1,6 +1,6 @@
 // This file is a part of the IncludeOS unikernel - www.includeos.org
 //
-// Copyright 2015-2016 Oslo and Akershus University College of Applied Sciences
+// Copyright 2015-2018 Oslo and Akershus University College of Applied Sciences
 // and Alfred Bratterud
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +19,9 @@
 #define HTTP_METHODS_HPP
 
 #include <array>
-#include <ostream>
+#include <iosfwd>
+#include <string_view>
 #include <unordered_map>
-
-#include "../../util/detail/string_view"
 
 namespace http {
 
@@ -45,9 +44,9 @@ namespace http {
     /// @return The string representation of the code
     ///
     template<typename = void>
-    util::sview str(const Method m) noexcept {
+    std::string_view str(const Method m) noexcept {
 
-      const static std::array<util::sview, 10> views
+      const static std::array<std::string_view, 10> views
       {
         {
          "GET", "POST", "PUT", "DELETE", "OPTIONS",
@@ -72,9 +71,9 @@ namespace http {
     /// @return The code mapped to the method string representation
     ///
     template<typename = void>
-    Method code(util::csview method) noexcept {
+    Method code(const std::string_view method) noexcept {
 
-      const static std::unordered_map<util::sview, Method> code_map {
+      const static std::unordered_map<std::string_view, Method> code_map {
         {"GET",     GET},
         {"POST",    POST},
         {"PUT",     PUT},

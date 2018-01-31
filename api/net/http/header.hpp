@@ -1,6 +1,6 @@
 // This file is a part of the IncludeOS unikernel - www.includeos.org
 //
-// Copyright 2015-2016 Oslo and Akershus University College of Applied Sciences
+// Copyright 2015-2018 Oslo and Akershus University College of Applied Sciences
 // and Alfred Bratterud
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,13 +21,11 @@
 #include <algorithm>
 #include <cctype>
 #include <cstring>
-#include <ostream>
+#include <iosfwd>
 #include <type_traits>
 
 #include "common.hpp"
 #include "header_fields.hpp"
-
-#include "../../util/detail/string_view"
 
 namespace http {
 
@@ -120,7 +118,7 @@ public:
   /// @return true if the field is a member,
   /// false otherwise
   ///
-  bool has_field(util::csview field) const noexcept;
+  bool has_field(const std::string_view field) const noexcept;
 
   ///
   /// Get the value associated with a field
@@ -131,7 +129,7 @@ public:
   /// view otherwise
   ///
   ///
-  util::sview value(util::csview field) const noexcept;
+  std::string_view value(const std::string_view field) const noexcept;
 
   ///
   /// Check to see if the set is empty
@@ -156,7 +154,7 @@ public:
   ///
   /// @param field The field name to remove
   ///
-  void erase(util::csview field) noexcept;
+  void erase(const std::string_view field) noexcept;
 
   ///
   /// Remove all fields from the set leaving it
@@ -196,7 +194,7 @@ private:
   /// @return Iterator to the location of the field,
   /// else location to the end of the sequence
   ///
-  Const_iterator find(util::csview field) const noexcept;
+  Const_iterator find(const std::string_view field) const noexcept;
 
   ///
   /// Operator to stream the contents of the set
