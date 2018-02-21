@@ -15,7 +15,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//#define DEBUG
 #include <net/ip6/ip6.hpp>
 #include <net/ip6/packet_ip6.hpp>
 
@@ -23,19 +22,6 @@
 
 namespace net
 {
-  const IP6::addr IP6::addr::node_all_nodes(0xFF01, 0, 0, 0, 0, 0, 0, 1);
-  const IP6::addr IP6::addr::node_all_routers(0xFF01, 0, 0, 0, 0, 0, 0, 2);
-  const IP6::addr IP6::addr::node_mDNSv6(0xFF01, 0, 0, 0, 0, 0, 0, 0xFB);
-
-  const IP6::addr IP6::addr::link_unspecified(0, 0, 0, 0, 0, 0, 0, 0);
-
-  const IP6::addr IP6::addr::link_all_nodes(0xFF02, 0, 0, 0, 0, 0, 0, 1);
-  const IP6::addr IP6::addr::link_all_routers(0xFF02, 0, 0, 0, 0, 0, 0, 2);
-  const IP6::addr IP6::addr::link_mDNSv6(0xFF02, 0, 0, 0, 0, 0, 0, 0xFB);
-
-  const IP6::addr IP6::addr::link_dhcp_servers(0xFF02, 0, 0, 0, 0, 0, 0x01, 0x02);
-  const IP6::addr IP6::addr::site_dhcp_servers(0xFF05, 0, 0, 0, 0, 0, 0x01, 0x03);
-
   IP6::IP6(const IP6::addr& lo)
     : local(lo)
   {
@@ -106,26 +92,6 @@ namespace net
       }
 
   };
-
-  static const std::string lut = "0123456789abcdef";
-
-  std::string IP6::addr::str() const
-  {
-    std::string ret(40, 0);
-    int counter = 0;
-
-    const uint8_t* octet = i8;
-
-    for (int i = 0; i < 16; i++)
-      {
-        ret[counter++] = lut[(octet[i] & 0xF0) >> 4];
-        ret[counter++] = lut[(octet[i] & 0x0F) >> 0];
-        if (i & 1)
-          ret[counter++] = ':';
-      }
-    ret.resize(counter-1);
-    return ret;
-  }
 
   void IP6::transmit(std::shared_ptr<PacketIP6>& ip6_packet)
   {
